@@ -6,11 +6,20 @@ import re
 
 def elem2list(xml_element):
     '''
+    Convert the IATI activity tree into a flat list of transactions.
+
     Take the root node of an XML containing IATI activity information. Here
     xml_element is of type xml.etree.ElementTree.Element, and its children must
     all be iati-activity tags.
 
-    Return a list of dicts.
+    Return a flat list of dicts. Each dict represents a row to be inserted in
+    SQL. Each iati-activity element does *not* correspond to a single dict.
+    Rather, each iati-activity tag will be used to generate multiple rows. We
+    make a new dict for each "commitment" transaction (and ignore other types
+    of transactions). If the transaction belongs in multiple DAC sectors, we
+    break it down into multiple dicts, one for each sector; in this case, the
+    "amount" listed will be whatever percentage of the total amount that
+    belongs to that sector.
     '''
     result = []
     for act in xml_element:
