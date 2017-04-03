@@ -49,13 +49,11 @@ def elem2list(xml_element):
 
 
                     d['cause_area'] = sector_code2cause_area(sector.attrib["code"])
-                    # d['donor_cause_area_url'] = 
+                    d['donor_cause_area_url'] = "NULL" # TODO
                     # Adjust the amount
-                    d_sec['amount'] = (total_amount *
-                            sector.attrib.get("percentage", 100) / 100)
-                    """
-                    notes,
-                    """
+                    percent = float(sector.attrib.get("percentage", 100))
+                    d['amount'] = total_amount * percent / 100
+                    d['notes'] = "NULL" # TODO
                     result.append(d)
     return result
 
