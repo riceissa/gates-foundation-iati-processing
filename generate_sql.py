@@ -2,6 +2,7 @@
 
 import xml.etree.ElementTree
 import sys
+import re
 
 def elem2list(xml_element):
     '''
@@ -33,6 +34,7 @@ def elem2list(xml_element):
                 # These fields are common among all rows in the transaction
                 donee = trans.find("receiver-org").text.strip()
                 donation_date = trans.find('transaction-date').attrib['iso-date']
+                assert re.match(r"\A[0-9]{4}-[0-9]{2}-[0-9]{2}\Z", donation_date)
                 donation_date_precision = "day"
 
                 # Save this value for later; we will multiply the total amount
