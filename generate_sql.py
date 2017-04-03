@@ -17,6 +17,8 @@ def elem2list(xml_element):
 
         # These fields are common among all rows in the activity
         donor = act.find('reporting-org').text
+        # Make sure we're talking about the Gates Foundation
+        assert donor == "Bill and Melinda Gates Foundation"
         countries = [t.attrib['code'] for t in act.findall("recipient-country")]
         affected_countries = ", ".join(countries)
 
@@ -32,6 +34,12 @@ def elem2list(xml_element):
                 # Save this value for later; we will multiply the total amount
                 # by the percentage of the total the sector gets
                 total_amount = float(trans.find('value').text)
+
+                # As a sanity check, ensure that the "provider-org" tag under
+                # transaction is the Gates Foundation
+                provider = trans.find("provider-org").text
+                assert provider in ["Bill &amp; Melinda Gates Foundation",
+                        "Bill & Melinda Gates Foundation"], "provider was " + provider
 
                 for sector in sectors:
                     # Make new dict and fill in all the fields that are in
