@@ -70,7 +70,7 @@ def elem2list(xml_element):
                     d['donor'] = donor
                     d['affected_countries'] = affected_countries
 
-                    d['donee'] = donee
+                    d['donee'] = donee_normalized(donee)
                     d['donation_date'] = donation_date
                     d['donation_date_precision'] = donation_date_precision
 
@@ -90,6 +90,17 @@ def sector_code2cause_area(code):
     cause area.
     '''
     return "FIXME"
+
+def donee_normalized(x):
+    '''
+    Normalize and clean up donee string. Return the cleaned up string.
+    '''
+    dmap = {
+        "Agence Franחaise de Dיveloppement": "Agence Française de Développement",
+    }
+    if x in dmap:
+        return dmap[x]
+    return x
 
 def mysql_quote(x):
     '''
