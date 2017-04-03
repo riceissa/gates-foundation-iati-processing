@@ -12,36 +12,48 @@ def elem2list(xml_element):
     '''
     result = []
     for act in xml_element:
+        sectors = act.findall("sector")
+        assert len(sectors) > 0, "must have at least one sector"
+
+        # These fields are common among all rows in the activity
         donor = act.find('reporting-org').text
         url = "https://iatiregistry.org/publisher/bmgf"
         countries = [t.attrib['code'] for t in act.findall("recipient-country")]
         affected_countries = ", ".join(countries)
-        for trans in act.findall("transaction"):
-            # Make new dict and fill in all the fields that are in common
-            d = {}
-            d['donor'] = donor
-            d['url'] = url
-            d['cause_area'] =
-            d['affected_countries'] = 
-            d['donation_date_basis'] = "IATI"
-            """
-            donor_cause_area_url,
-            notes,
-            affected_states"""
 
+        # Within each activity, we want a separate SQL row for each combination
+        # of transaction and sector
+        for trans in act.findall("transaction"):
+            if trans.find("transaction-type").attrib["code"] == "C":
+                # These fields are common among all rows in the transaction
+                d['donee'] = trans.find("receiver-org").text.strip()
+                d['donation_date'] = trans.find('transaction-date').attrib['iso-date']
+                d['donation_date_precision'] = "day"
+
+                for sector in sectors:
+
+
+
+                    d = {}
             d['amount'] = float(trans.find('value').text)
-            d['donee'] = trans.find("receiver-org").text.strip()
-            d['donation_date'] = trans.find('transaction-date').attrib['iso-date']
-            d['donation_date_precision'] = "day"
-            for sector in act.findall("sector"):
-                # We want a separate row for each sector, of the transaction,
-                # so copy the dict
-                d_sec = d.copy()
+                d['donor'] = donor
+                d['url'] = url
+                d['affected_countries'] = affected_countries
+                d['donation_date_basis'] = "IATI"
                 d_sec['cause_area'] = sector_code2cause_area(sector.attrib["code"])
+                # d_sec['donor_cause_area_url'] = 
                 # Adjust the amount
                 d_sec['amount'] = d_sec['amount'] * sector.attrib.get("percentage", 100) / 100
                 result.append(d_sec)
+            # Make new dict and fill in all the fields that are in common
+            """
+            notes,
+            """
+
             result.append(d)
+
+
+
     return result
 
 def sector_code2cause_area(code):
