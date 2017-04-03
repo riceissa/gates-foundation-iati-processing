@@ -12,19 +12,26 @@ def elem2list(xml_element):
     '''
     for act in xml_element:
         donor = act.find('reporting-org').text
+        url = "https://iatiregistry.org/publisher/bmgf"
+        countries = [t.attrib['code'] for t in act.findall("recipient-country")]
+        affected_countries = ", ".join(countries)
         for trans in act.findall("transaction"):
             # Make new dict and fill in all the fields that are in common
             d = {}
             d['donor'] = donor
-            d['donee'] = 
+            d['url'] = url
             d['cause_area'] =
             d['affected_countries'] = 
             d['donation_date_basis'] = "IATI"
-            """donation_date,
-    donation_date_precision, , url,
-    donor_cause_area_url, notes, , affected_states"""
+            """
+            donor_cause_area_url,
+            notes,
+            affected_states"""
 
             d['amount'] = float(trans.find('value').text)
+            d['donee'] = trans.find("receiver-org").text.strip()
+            d['donation_date'] = trans.find('transaction-date').attrib['iso-date']
+            d['donation_date_precision'] = "day"
 
 def mysql_quote(x):
     '''
