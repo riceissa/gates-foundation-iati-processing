@@ -55,7 +55,7 @@ def print_sql(iati_list):
     '''
     print("""insert into donations (donor, donee, amount, donation_date,
     donation_date_precision, donation_date_basis, cause_area, url,
-    donor_cause_area_url, notes, affected_countries, affected_states) values""")
+    donor_cause_area_url, notes, affected_countries) values""")
     for t in iati_list:
         print()
 
