@@ -33,6 +33,13 @@ def elem2list(xml_element):
             d['donation_date'] = trans.find('transaction-date').attrib['iso-date']
             d['donation_date_precision'] = "day"
 
+def sector_code2cause_area(code):
+    '''
+    Convert the DAC five-digit sector code to a string that represents the
+    cause area.
+    '''
+    return "FIXME"
+
 def mysql_quote(x):
     '''
     Quote the string x using MySQL quoting rules. Probably not safe against
@@ -53,4 +60,12 @@ def print_sql(iati_list):
         print()
 
 if __name__ == "__main__":
-    e = xml.etree.ElementTree.parse(xml_path).getroot()
+    paths = [
+        "bmgf-activity-a-f.xml",
+        "bmgf-activity-g-m.xml",
+        "bmgf-activity-n-s.xml",
+        "bmgf-activity-t-z.xml",
+    ]
+    for p in paths:
+        e = xml.etree.ElementTree.parse(p).getroot()
+        print_sql(elem2list(e))
