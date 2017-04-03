@@ -10,6 +10,7 @@ def elem2list(xml_element):
 
     Return a list of dicts.
     '''
+    result = []
     for act in xml_element:
         donor = act.find('reporting-org').text
         url = "https://iatiregistry.org/publisher/bmgf"
@@ -32,6 +33,16 @@ def elem2list(xml_element):
             d['donee'] = trans.find("receiver-org").text.strip()
             d['donation_date'] = trans.find('transaction-date').attrib['iso-date']
             d['donation_date_precision'] = "day"
+            for sector in act.findall("sector"):
+                # We want a separate row for each sector, of the transaction,
+                # so copy the dict
+                d_sec = d.copy()
+                d_sec['cause_area'] = sector_code2cause_area(sector.attrib["code"])
+                # Adjust the amount
+                d_sec['amount'] = d_sec['amount'] * sector.attrib.get("percentage", 100) / 100
+                result.append(d_sec)
+            result.append(d)
+    return result
 
 def sector_code2cause_area(code):
     '''
