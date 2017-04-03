@@ -99,22 +99,14 @@ def donee_normalized(x):
     x = x.replace("י", "é")
     x = x.replace("ף", "ó")
     x = x.replace("ד", "ã")
-    x = x.replace()
-    dmap = {
-        "Agence Franחaise de Dיveloppement": "Agence Française de Développement",
-        "Agence de Mיdecine Prיventive": "Agence de Médecine Préventive",
-        "Federaciףn Red NicaSalud": "Federación Red NicaSalud",
-        "Consorcio de Investigaciףn sobre VIH SIDA TB CISIDAT, A.C": "Consorcio de Investigación Sobre VIH/SIDA/TB, CISIDAT A.C.",
-        "Fundaחדo Ataulpho de Paiva": "Fundação Ataulpho de Paiva",
-        "Fundaciףn para Estudios Biomיdicos Avanzados de la Facultad de Medicina": "Fundación para Estudios Biomédicos Avanzados de la Facultad de Medicina",
-        "Ecole Polytechnique Fיdיrale de Lausanne": "École Polytechnique Fédérale de Lausanne",
-        "Asociaciףn Benיfica PRISMA": "Asociación Benéfica PRISMA",
-        "Fundaciףn Instituto de Investigaciones Biotecnolףgicas": "Fundacion Instituto de Investigaciones Biotecnológicas",
-        "Fundaciףn In Terris": "Fundación In Terris",
-        "Alianza para la innovaciףn en integridad de infraestructura y ductos A.C (AI3D)": "",
-    }
-    if x in dmap:
-        return dmap[x]
+    x = x.replace("ם", "í")
+    x = x.replace("צ", "ö")
+    x = x.replace("א", "à")
+    x = x.replace("ט", "è")
+    x = x.replace("ע", "ò")
+    x = x.replace("ב", "á")
+    x = x.replace("ה", "ä")
+    x = x.replace("כ", "ë")
     return x
 
 def mysql_quote(x):
