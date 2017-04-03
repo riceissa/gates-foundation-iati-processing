@@ -82,7 +82,7 @@ def cook_row(t):
     result += ",".join([
         mysql_quote(t['donor']),
         mysql_quote(t['donee']),
-        t['amount'],
+        str(t['amount']),
         mysql_quote(t['donation_date']),
         mysql_quote(t['donation_date_precision']),
         mysql_quote(t['donation_date_basis']),
