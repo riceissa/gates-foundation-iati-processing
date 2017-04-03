@@ -33,6 +33,7 @@ def elem2list(xml_element):
             if trans.find("transaction-type").attrib["code"] == "C":
                 # These fields are common among all rows in the transaction
                 donee = trans.find("receiver-org").text.strip()
+                assert len(trans.findall("receiver-org")) == 1
                 donation_date = trans.find('transaction-date').attrib['iso-date']
                 assert re.match(r"\A[0-9]{4}-[0-9]{2}-[0-9]{2}\Z", donation_date)
                 donation_date_precision = "day"
@@ -40,6 +41,7 @@ def elem2list(xml_element):
                 # Save this value for later; we will multiply the total amount
                 # by the percentage of the total the sector gets
                 total_amount = float(trans.find('value').text)
+                assert len(trans.findall('value')) == 1
 
                 # As a sanity check, ensure that the "provider-org" tag under
                 # transaction is the Gates Foundation
