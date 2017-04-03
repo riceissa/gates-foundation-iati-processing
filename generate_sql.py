@@ -34,6 +34,7 @@ def elem2list(xml_element):
         # This doesn't have to be the case, but as of this writing, for Gate
         # Foundation IATI data, each activity only has one implementing org
         assert len(implementers) == 1
+        implementer = implementers[0]
 
         # Within each activity, we want a separate SQL row for each combination
         # of transaction and sector
@@ -44,6 +45,7 @@ def elem2list(xml_element):
                 # These fields are common among all rows in the transaction
                 donee = trans.find("receiver-org").text.strip()
                 assert len(trans.findall("receiver-org")) == 1
+                assert donee == implementer
                 donation_date = trans.find('transaction-date').attrib['iso-date']
                 assert re.match(r"\A[0-9]{4}-[0-9]{2}-[0-9]{2}\Z", donation_date)
                 donation_date_precision = "day"
