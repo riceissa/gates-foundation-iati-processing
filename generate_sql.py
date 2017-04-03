@@ -60,6 +60,28 @@ def mysql_quote(x):
     x = x.replace("'", "''")
     return "'{}'".format(x)
 
+def cook_row(t):
+    '''
+    Take a transaction dictionary t. Return a string that can be used directly
+    in a SQL insert statement (without trailing comma).
+    '''
+    result = "("
+    result += ",".join([
+        mysql_quote(t['donor']),
+        mysql_quote(t['donee']),
+        t['amount'],
+        mysql_quote(t['donation_date']),
+        mysql_quote(t['donation_date_precision']),
+        mysql_quote(t['donation_date_basis']),
+        mysql_quote(t['cause_area']),
+        mysql_quote(t['url']),
+        mysql_quote(t['donor_cause_area_url']),
+        mysql_quote(t['notes']),
+        mysql_quote(t['affected_countries']),
+    ])
+    result += ")"
+    return result
+
 def print_sql(iati_list):
     '''
     Take a list of IATI activity dicts.
@@ -67,8 +89,7 @@ def print_sql(iati_list):
     print("""insert into donations (donor, donee, amount, donation_date,
     donation_date_precision, donation_date_basis, cause_area, url,
     donor_cause_area_url, notes, affected_countries) values""")
-    for t in iati_list:
-        print()
+    print(",\n".join(cook_row(t) for t in iati_list) + ";")
 
 if __name__ == "__main__":
     paths = [
