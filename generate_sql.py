@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import xml.etree.ElementTree
+import sys
 
 def elem2list(xml_element):
     '''
@@ -17,6 +18,7 @@ def elem2list(xml_element):
 
         # These fields are common among all rows in the activity
         donor = act.find('reporting-org').text
+        assert len(act.findall('reporting-org')) == 1
         # Make sure we're talking about the Gates Foundation
         assert donor == "Bill and Melinda Gates Foundation"
         countries = [t.attrib['code'] for t in act.findall("recipient-country")]
@@ -24,7 +26,9 @@ def elem2list(xml_element):
 
         # Within each activity, we want a separate SQL row for each combination
         # of transaction and sector
-        for trans in act.findall("transaction"):
+        transactions = act.findall("transaction")
+        assert len(transactions) > 0
+        for trans in transactions:
             if trans.find("transaction-type").attrib["code"] == "C":
                 # These fields are common among all rows in the transaction
                 donee = trans.find("receiver-org").text.strip()
