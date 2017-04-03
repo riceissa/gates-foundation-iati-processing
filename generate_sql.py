@@ -25,6 +25,16 @@ def elem2list(xml_element):
         countries = [t.attrib['code'] for t in act.findall("recipient-country")]
         affected_countries = ", ".join(countries)
 
+        implementers = []
+        for p in act.findall('participating-org'):
+            if p.attrib['role'] == "Funding":
+                assert p.text == "Bill & Melinda Gates Foundation"
+            if p.attrib['role'] == "Implementing":
+                implementers.append(p.text)
+        # This doesn't have to be the case, but as of this writing, for Gate
+        # Foundation IATI data, each activity only has one implementing org
+        assert len(implementers) == 1
+
         # Within each activity, we want a separate SQL row for each combination
         # of transaction and sector
         transactions = act.findall("transaction")
@@ -46,8 +56,7 @@ def elem2list(xml_element):
                 # As a sanity check, ensure that the "provider-org" tag under
                 # transaction is the Gates Foundation
                 provider = trans.find("provider-org").text
-                assert provider in ["Bill &amp; Melinda Gates Foundation",
-                        "Bill & Melinda Gates Foundation"], "provider was " + provider
+                assert provider == "Bill & Melinda Gates Foundation"
 
                 for sector in sectors:
                     # Make new dict and fill in all the fields that are in
