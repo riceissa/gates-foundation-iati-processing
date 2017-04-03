@@ -94,6 +94,10 @@ def sector_code2cause_area(code):
 def donee_normalized(x):
     '''
     Normalize and clean up donee string. Return the cleaned up string.
+
+    The Gates IATI XML promises UTF-8, and it *is* valid UTF-8 as far as I can
+    make out, except there's a bunch of Hebrew letters where there shouldn't
+    be.
     '''
     x = x.replace("ח", "ç")
     x = x.replace("י", "é")
