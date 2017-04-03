@@ -17,7 +17,6 @@ def elem2list(xml_element):
 
         # These fields are common among all rows in the activity
         donor = act.find('reporting-org').text
-        url = "https://iatiregistry.org/publisher/bmgf"
         countries = [t.attrib['code'] for t in act.findall("recipient-country")]
         affected_countries = ", ".join(countries)
 
@@ -26,34 +25,38 @@ def elem2list(xml_element):
         for trans in act.findall("transaction"):
             if trans.find("transaction-type").attrib["code"] == "C":
                 # These fields are common among all rows in the transaction
-                d['donee'] = trans.find("receiver-org").text.strip()
-                d['donation_date'] = trans.find('transaction-date').attrib['iso-date']
-                d['donation_date_precision'] = "day"
+                donee = trans.find("receiver-org").text.strip()
+                donation_date = trans.find('transaction-date').attrib['iso-date']
+                donation_date_precision = "day"
+
+                # Save this value for later; we will multiply the total amount
+                # by the percentage of the total the sector gets
+                total_amount = float(trans.find('value').text)
 
                 for sector in sectors:
+                    # Make new dict and fill in all the fields that are in
+                    # common
+                    d = {
+                        'url': "https://iatiregistry.org/publisher/bmgf",
+                        'donation_date_basis': "IATI",
+                    }
+                    d['donor'] = donor
+                    d['affected_countries'] = affected_countries
+
+                    d['donee'] = donee
+                    d['donation_date'] = donation_date
+                    d['donation_date_precision'] = donation_date_precision
 
 
-
-                    d = {}
-            d['amount'] = float(trans.find('value').text)
-                d['donor'] = donor
-                d['url'] = url
-                d['affected_countries'] = affected_countries
-                d['donation_date_basis'] = "IATI"
-                d_sec['cause_area'] = sector_code2cause_area(sector.attrib["code"])
-                # d_sec['donor_cause_area_url'] = 
-                # Adjust the amount
-                d_sec['amount'] = d_sec['amount'] * sector.attrib.get("percentage", 100) / 100
-                result.append(d_sec)
-            # Make new dict and fill in all the fields that are in common
-            """
-            notes,
-            """
-
-            result.append(d)
-
-
-
+                    d['cause_area'] = sector_code2cause_area(sector.attrib["code"])
+                    # d['donor_cause_area_url'] = 
+                    # Adjust the amount
+                    d_sec['amount'] = (total_amount *
+                            sector.attrib.get("percentage", 100) / 100)
+                    """
+                    notes,
+                    """
+                    result.append(d)
     return result
 
 def sector_code2cause_area(code):
