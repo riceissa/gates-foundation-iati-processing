@@ -11,8 +11,19 @@ def elem2list(xml_element):
     Return a list of dicts.
     '''
     for act in xml_element:
+        donor = act.find('reporting-org').text
         for trans in act.findall("transaction"):
+            # Make new dict and fill in all the fields that are in common
             d = {}
+            d['donor'] = donor
+            d['donee'] = 
+            d['cause_area'] =
+            d['affected_countries'] = 
+            d['donation_date_basis'] = "IATI"
+            """donation_date,
+    donation_date_precision, , url,
+    donor_cause_area_url, notes, , affected_states"""
+
             d['amount'] = float(trans.find('value').text)
 
 def mysql_quote(x):
