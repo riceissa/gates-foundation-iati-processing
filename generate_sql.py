@@ -46,8 +46,10 @@ def elem2list(xml_element):
                 donee = trans.find("receiver-org").text.strip()
                 assert len(trans.findall("receiver-org")) == 1
                 assert donee == implementer
-                donation_date = trans.find('transaction-date').attrib['iso-date']
-                assert re.match(r"\A[0-9]{4}-[0-9]{2}-[0-9]{2}\Z", donation_date)
+                donation_date = trans.find('transaction-date') \
+                        .attrib['iso-date']
+                assert re.match(r"\A[0-9]{4}-[0-9]{2}-[0-9]{2}\Z",
+                        donation_date)
                 donation_date_precision = "day"
 
                 # Save this value for later; we will multiply the total amount
@@ -75,7 +77,8 @@ def elem2list(xml_element):
                     d['donation_date_precision'] = donation_date_precision
 
 
-                    d['cause_area'] = sector_code2cause_area(sector.attrib["code"])
+                    d['cause_area'] = sector_code2cause_area(
+                            sector.attrib["code"])
                     d['donor_cause_area_url'] = "NULL" # TODO
                     # Adjust the amount
                     percent = float(sector.attrib.get("percentage", 100))
