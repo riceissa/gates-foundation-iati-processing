@@ -102,7 +102,7 @@ def print_sql(iati_list):
     print("""insert into donations (donor, donee, amount, donation_date,
     donation_date_precision, donation_date_basis, cause_area, url,
     donor_cause_area_url, notes, affected_countries) values""")
-    print(",\n".join(cook_row(t) for t in iati_list) + ";")
+    print("    " + ",\n    ".join(cook_row(t) for t in iati_list) + ";")
 
 if __name__ == "__main__":
     paths = [
