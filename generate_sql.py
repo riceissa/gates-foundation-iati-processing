@@ -69,6 +69,16 @@ def elem2list(xml_element, country_codelist, region_codelist, aidtype_codelist):
                         donation_date)
                 donation_date_precision = "day"
 
+                # Version 1.03 of the standard doesn't seem to document this,
+                # but e.g. version 1.05 states that
+                # <http://iatistandard.org/105/codelists/AidType/#use-this-codelist-for>
+                # the default aid type can be overridden by an "aid-type" tag
+                # in a transaction. But the Gates Foundation data doesn't
+                # override this anywhere, so we place an assertion that it
+                # doesn't, in case this situation changes in future versions of
+                # the data.
+                assert len(trans.findall("aid-type")) == 0
+
                 # Save this value for later; we will multiply the total amount
                 # by the percentage of the total the sector gets
                 total_amount = float(findone(trans, 'value').text)
