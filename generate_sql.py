@@ -4,7 +4,9 @@ import xml.etree.ElementTree
 import re
 import csv
 
-def elem2list(xml_element, country_codelist, region_codelist, aidtype_codelist):
+
+def elem2list(xml_element, country_codelist, region_codelist,
+              aidtype_codelist):
     '''
     Convert the IATI activity tree into a flat list of transactions.
 
@@ -31,13 +33,15 @@ def elem2list(xml_element, country_codelist, region_codelist, aidtype_codelist):
         # Make sure we're talking about the Gates Foundation
         assert donor == "Bill and Melinda Gates Foundation"
         countries = [country_codelist[t.attrib['code']]
-                for t in act.findall("recipient-country")]
+                     for t in act.findall("recipient-country")]
         affected_countries = ", ".join(countries)
         regions = [code2region(t.attrib['code'], region_codelist)
-                for t in act.findall("recipient-region")]
+                   for t in act.findall("recipient-region")]
         affected_regions = ", ".join(regions)
-        aid_type = aidtype_codelist[findone(act, "default-aid-type").attrib['code']]
-        notes = findone(act, 'description').text + "; " + "Aid type: " + aid_type
+        aid_type = aidtype_codelist[
+                findone(act, "default-aid-type") .attrib['code']]
+        notes = (findone(act, 'description').text + "; " + "Aid type: " +
+                 aid_type)
 
         implementers = []
         for p in act.findall('participating-org'):
@@ -62,9 +66,9 @@ def elem2list(xml_element, country_codelist, region_codelist, aidtype_codelist):
                 donee = findone(trans, "receiver-org").text.strip()
                 assert donee == implementer
                 donation_date = findone(trans, 'transaction-date') \
-                        .attrib['iso-date']
+                    .attrib['iso-date']
                 assert re.match(r"\A[0-9]{4}-[0-9]{2}-[0-9]{2}\Z",
-                        donation_date)
+                                donation_date)
                 donation_date_precision = "day"
 
                 # Version 1.03 of the standard doesn't seem to document this,
@@ -107,12 +111,13 @@ def elem2list(xml_element, country_codelist, region_codelist, aidtype_codelist):
                     # Fields that require sector information
                     d['cause_area'] = sector_code2cause_area(
                             sector.attrib["code"])
-                    d['donor_cause_area_url'] = "NULL" # TODO
+                    d['donor_cause_area_url'] = "NULL"  # TODO
                     # Adjust the amount
                     percent = float(sector.attrib.get("percentage", 100))
                     d['amount'] = total_amount * percent / 100
                     result.append(d)
     return result
+
 
 def findone(element, match):
     '''
@@ -122,12 +127,14 @@ def findone(element, match):
     assert len(element.findall(match)) == 1
     return element.find(match)
 
+
 def sector_code2cause_area(code):
     '''
     Convert the DAC five-digit sector code to a string that represents the
     cause area.
     '''
     return "FIXME"
+
 
 def code2region(code, region_codelist):
     '''
@@ -138,6 +145,7 @@ def code2region(code, region_codelist):
     elif code.lstrip("0") in region_codelist:
         return region_codelist[code.lstrip("0")]
     raise ValueError("cannot decode region")
+
 
 def donee_normalized(x):
     '''
@@ -161,6 +169,7 @@ def donee_normalized(x):
     x = x.replace("כ", "ë")
     return x
 
+
 def mysql_quote(x):
     '''
     Quote the string x using MySQL quoting rules. If x is the empty string,
@@ -172,6 +181,7 @@ def mysql_quote(x):
     x = x.replace("\\", "\\\\")
     x = x.replace("'", "''")
     return "'{}'".format(x)
+
 
 def cooked_row(t):
     '''
@@ -196,6 +206,7 @@ def cooked_row(t):
     result += ")"
     return result
 
+
 def print_sql(iati_list):
     '''
     Take a list of IATI activity dicts.
@@ -205,6 +216,7 @@ def print_sql(iati_list):
     donor_cause_area_url, notes, affected_countries,
     affected_regions) values""")
     print("    " + ",\n    ".join(cooked_row(t) for t in iati_list) + ";")
+
 
 if __name__ == "__main__":
     # Prepare country codelist
@@ -245,4 +257,4 @@ if __name__ == "__main__":
     for p in paths:
         e = xml.etree.ElementTree.parse(p).getroot()
         print_sql(elem2list(e, country_codelist, region_codelist,
-            aidtype_codelist))
+                  aidtype_codelist))
