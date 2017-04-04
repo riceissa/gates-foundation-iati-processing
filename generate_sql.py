@@ -142,9 +142,11 @@ def code2country(x):
 
 def mysql_quote(x):
     '''
-    Quote the string x using MySQL quoting rules. Probably not safe against
-    maliciously formed strings.
+    Quote the string x using MySQL quoting rules. If x is the empty string,
+    return "NULL". Probably not safe against maliciously formed strings.
     '''
+    if not x:
+        return "NULL"
     x = x.replace("\\", "\\\\")
     x = x.replace("'", "''")
     return "'{}'".format(x)
