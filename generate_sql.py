@@ -35,7 +35,7 @@ def elem2list(xml_element, country_codelist, region_codelist):
         assert donor == "Bill and Melinda Gates Foundation"
         countries = [country_codelist[t.attrib['code']] for t in act.findall("recipient-country")]
         affected_countries = ", ".join(countries)
-        regions = [region_codelist[t.attrib['code']] for t in act.findall("recipient-region")]
+        regions = [code2region(t.attrib['code'], region_codelist) for t in act.findall("recipient-region")]
         affected_regions = ", ".join(regions)
         notes = act.find('description').text
 
@@ -110,6 +110,16 @@ def sector_code2cause_area(code):
     cause area.
     '''
     return "FIXME"
+
+def code2region(code, region_codelist):
+    '''
+    Convert the region code to the region name.
+    '''
+    if code in region_codelist:
+        return region_codelist[code]
+    elif code.lstrip("0") in region_codelist:
+        return region_codelist[code.lstrip("0")]
+    raise ValueError("cannot decode region")
 
 def donee_normalized(x):
     '''
