@@ -47,7 +47,9 @@ def elem2list(xml_element, country_codelist, region_codelist):
             if p.attrib['role'] == "Implementing":
                 implementers.append(p.text)
         # This doesn't have to be the case, but as of this writing, for Gates
-        # Foundation IATI data, each activity only has one implementing org
+        # Foundation IATI data, each activity only has one implementing org. If
+        # the situation changes we will want to know about it, so place an
+        # assertion.
         assert len(implementers) == 1
         implementer = implementers[0]
 
