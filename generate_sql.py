@@ -32,9 +32,11 @@ def elem2list(xml_element, country_codelist, region_codelist):
         donor = findone(act, 'reporting-org').text
         # Make sure we're talking about the Gates Foundation
         assert donor == "Bill and Melinda Gates Foundation"
-        countries = [country_codelist[t.attrib['code']] for t in act.findall("recipient-country")]
+        countries = [country_codelist[t.attrib['code']]
+                for t in act.findall("recipient-country")]
         affected_countries = ", ".join(countries)
-        regions = [code2region(t.attrib['code'], region_codelist) for t in act.findall("recipient-region")]
+        regions = [code2region(t.attrib['code'], region_codelist)
+                for t in act.findall("recipient-region")]
         affected_regions = ", ".join(regions)
         notes = findone(act, 'description').text
 
@@ -189,7 +191,8 @@ def print_sql(iati_list):
     '''
     print("""insert into donations (donor, donee, amount, donation_date,
     donation_date_precision, donation_date_basis, cause_area, url,
-    donor_cause_area_url, notes, affected_countries, affected_regions) values""")
+    donor_cause_area_url, notes, affected_countries,
+    affected_regions) values""")
     print("    " + ",\n    ".join(cooked_row(t) for t in iati_list) + ";")
 
 if __name__ == "__main__":
