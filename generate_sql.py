@@ -1,9 +1,7 @@
 #!/usr/bin/python3
 
 import xml.etree.ElementTree
-import sys
 import re
-import json
 import csv
 
 def elem2list(xml_element, country_codelist, region_codelist, aidtype_codelist):
