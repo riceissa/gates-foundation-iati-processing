@@ -6,7 +6,7 @@ import re
 import json
 import csv
 
-def elem2list(xml_element):
+def elem2list(xml_element, country_codelist, region_codelist):
     '''
     Convert the IATI activity tree into a flat list of transactions.
 
@@ -33,8 +33,10 @@ def elem2list(xml_element):
         assert len(act.findall('reporting-org')) == 1
         # Make sure we're talking about the Gates Foundation
         assert donor == "Bill and Melinda Gates Foundation"
-        countries = [code2country(t.attrib['code']) for t in act.findall("recipient-country")]
+        countries = [country_codelist[t.attrib['code']] for t in act.findall("recipient-country")]
         affected_countries = ", ".join(countries)
+        regions = []
+        affected_regions = ", ".join(regions)
         notes = act.find('description').text
 
         implementers = []
@@ -130,19 +132,6 @@ def donee_normalized(x):
     x = x.replace("כ", "ë")
     return x
 
-def code2country(x):
-    '''
-    Convert the country code to the country name, e.g. "AF" becomes
-    "AFGHANISTAN". Return x itself if nothing matched.
-    '''
-    with open("Country.csv", newline='') as f:
-        reader = csv.reader(f, delimiter=',', quotechar='"')
-        for row in reader:
-            code, name, _ = row
-            if x == code:
-                return name[0] + name[1:].lower()
-    return x
-
 def mysql_quote(x):
     '''
     Quote the string x using MySQL quoting rules. If x is the empty string,
@@ -187,6 +176,17 @@ def print_sql(iati_list):
     print("    " + ",\n    ".join(cooked_row(t) for t in iati_list) + ";")
 
 if __name__ == "__main__":
+    # Prepare country codelist
+    country_codelist = {}
+    with open("Country.csv", newline='') as f:
+        reader = csv.reader(f, delimiter=',', quotechar='"')
+        for row in reader:
+            code, name, _ = row
+            country_codelist[code] = name[0] + name[1:].lower()
+
+    # Prepare region codelist
+    region_codelist = {}
+
     paths = [
         "bmgf-activity-a-f.xml",
         "bmgf-activity-g-m.xml",
@@ -195,4 +195,4 @@ if __name__ == "__main__":
     ]
     for p in paths:
         e = xml.etree.ElementTree.parse(p).getroot()
-        print_sql(elem2list(e))
+        print_sql(elem2list(e, country_codelist, region_codelist))
