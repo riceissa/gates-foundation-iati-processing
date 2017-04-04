@@ -35,7 +35,7 @@ def elem2list(xml_element, country_codelist, region_codelist):
         assert donor == "Bill and Melinda Gates Foundation"
         countries = [country_codelist[t.attrib['code']] for t in act.findall("recipient-country")]
         affected_countries = ", ".join(countries)
-        regions = []
+        regions = [region_codelist[t.attrib['code']] for t in act.findall("recipient-region")]
         affected_regions = ", ".join(regions)
         notes = act.find('description').text
 
@@ -86,6 +86,7 @@ def elem2list(xml_element, country_codelist, region_codelist):
                     # Fields common on the basis of activity
                     d['donor'] = donor
                     d['affected_countries'] = affected_countries
+                    d['affected_regions'] = affected_regions
                     d['notes'] = notes
 
                     # Fields common on the basis of transaction
@@ -162,6 +163,7 @@ def cooked_row(t):
         mysql_quote(t['donor_cause_area_url']),
         mysql_quote(t['notes']),
         mysql_quote(t['affected_countries']),
+        mysql_quote(t['affected_regions']),
     ])
     result += ")"
     return result
@@ -172,7 +174,7 @@ def print_sql(iati_list):
     '''
     print("""insert into donations (donor, donee, amount, donation_date,
     donation_date_precision, donation_date_basis, cause_area, url,
-    donor_cause_area_url, notes, affected_countries) values""")
+    donor_cause_area_url, notes, affected_countries, affected_regions) values""")
     print("    " + ",\n    ".join(cooked_row(t) for t in iati_list) + ";")
 
 if __name__ == "__main__":
@@ -182,10 +184,20 @@ if __name__ == "__main__":
         reader = csv.reader(f, delimiter=',', quotechar='"')
         for row in reader:
             code, name, _ = row
+            # The standard capitalizes country names (which we don't want) so
+            # just keep the initial capital letter
             country_codelist[code] = name[0] + name[1:].lower()
 
     # Prepare region codelist
     region_codelist = {}
+    with open("Region.csv", newline='') as f:
+        reader = csv.reader(f, delimiter=',', quotechar='"')
+        for row in reader:
+            code, name = row
+            cruft = ", regional"
+            if name.endswith(cruft):
+                name = name[:-len(cruft)]
+            region_codelist[code] = name
 
     paths = [
         "bmgf-activity-a-f.xml",
