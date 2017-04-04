@@ -14,5 +14,5 @@ The Gates Foundation IATI data uses version 1.03 of the standard.
     # The aid type CSV from the standard is malformed (fails to escape double
     # quotes) so edit it a little
     wget 'http://codelists103.archive.iatistandard.org/data/codelist/AidType/version/1.0/lang/en.csv' -O - \
-        | sed 's/^B03.*/B03,"Contributions to specific-purpose programmes and funds managed by international organisations (multilateral, INGO)",_,_,_,_,_' \
+        | sed 's/^B03.*/B03,"Contributions to specific-purpose programmes and funds managed by international organisations (multilateral, INGO)",_,_,_,_,_/' \
         > AidType.csv
