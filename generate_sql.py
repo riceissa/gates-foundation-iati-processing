@@ -4,6 +4,7 @@ import xml.etree.ElementTree
 import sys
 import re
 import json
+import csv
 
 def elem2list(xml_element):
     '''
@@ -134,9 +135,10 @@ def code2country(x):
     Convert the country code to the country name, e.g. "AF" becomes
     "AFGHANISTAN". Return x itself if nothing matched.
     '''
-    with open("Country.csv", "r") as f:
-        for line in f:
-            code, name, _ = line.split(",")
+    with open("Country.csv", newline='') as f:
+        reader = csv.reader(f, delimiter=',', quotechar='"')
+        for row in reader:
+            code, name, _ = row
             if x == code:
                 return name[0] + name[1:].lower()
     return x
