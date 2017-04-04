@@ -11,4 +11,8 @@ The Gates Foundation IATI data uses version 1.03 of the standard.
     wget 'https://docs.gatesfoundation.org/documents/bmgf-activity-t-z.xml'
     wget 'http://codelists103.archive.iatistandard.org/data/codelist/Country/version/1.01/lang/en.csv' -O Country.csv
     wget 'http://codelists103.archive.iatistandard.org/data/codelist/Region/version/1.0/lang/en.csv' -O Region.csv
-    wget 'http://codelists103.archive.iatistandard.org/data/codelist/AidType/version/1.0/lang/en.csv' -O AidType.csv
+    # The aid type CSV from the standard is malformed (fails to escape double
+    # quotes) so edit it a little
+    wget 'http://codelists103.archive.iatistandard.org/data/codelist/AidType/version/1.0/lang/en.csv' -O - \
+        | sed 's/^B03.*/B03,"Contributions to specific-purpose programmes and funds managed by international organisations (multilateral, INGO)",_,_,_,_,_' \
+        > AidType.csv
