@@ -46,7 +46,7 @@ def elem2list(xml_element, country_codelist, region_codelist):
                 assert p.text == "Bill & Melinda Gates Foundation"
             if p.attrib['role'] == "Implementing":
                 implementers.append(p.text)
-        # This doesn't have to be the case, but as of this writing, for Gate
+        # This doesn't have to be the case, but as of this writing, for Gates
         # Foundation IATI data, each activity only has one implementing org
         assert len(implementers) == 1
         implementer = implementers[0]
