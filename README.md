@@ -9,4 +9,4 @@ The Gates Foundation IATI data uses version 1.03 of the standard.
     wget 'https://docs.gatesfoundation.org/documents/bmgf-activity-g-m.xml'
     wget 'https://docs.gatesfoundation.org/documents/bmgf-activity-n-s.xml'
     wget 'https://docs.gatesfoundation.org/documents/bmgf-activity-t-z.xml'
-    wget 'http://codelists103.archive.iatistandard.org/data/codelist/Country/version/1.01/lang/en.csv'
+    wget 'http://codelists103.archive.iatistandard.org/data/codelist/Country/version/1.01/lang/en.csv' -O Country.csv
