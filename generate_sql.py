@@ -72,20 +72,22 @@ def elem2list(xml_element):
                 assert provider == "Bill & Melinda Gates Foundation"
 
                 for sector in sectors:
-                    # Make new dict and fill in all the fields that are in
+                    # Make a new dict and fill in all the fields that are in
                     # common
                     d = {
                         'url': "https://iatiregistry.org/publisher/bmgf",
                         'donation_date_basis': "IATI",
                     }
+                    # Fields common on the basis of activity
                     d['donor'] = donor
                     d['affected_countries'] = affected_countries
 
+                    # Fields common on the basis of transaction
                     d['donee'] = donee_normalized(donee)
                     d['donation_date'] = donation_date
                     d['donation_date_precision'] = donation_date_precision
 
-
+                    # Fields that require sector information
                     d['cause_area'] = sector_code2cause_area(
                             sector.attrib["code"])
                     d['donor_cause_area_url'] = "NULL" # TODO
