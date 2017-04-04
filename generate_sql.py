@@ -6,7 +6,7 @@ import re
 import json
 import csv
 
-def elem2list(xml_element, country_codelist, region_codelist):
+def elem2list(xml_element, country_codelist, region_codelist, aidtype_codelist):
     '''
     Convert the IATI activity tree into a flat list of transactions.
 
@@ -38,7 +38,8 @@ def elem2list(xml_element, country_codelist, region_codelist):
         regions = [code2region(t.attrib['code'], region_codelist)
                 for t in act.findall("recipient-region")]
         affected_regions = ", ".join(regions)
-        notes = findone(act, 'description').text
+        aid_type = aidtype_codelist[findone(act, "default-aid-type").attrib['code']]
+        notes = findone(act, 'description').text + "; " + "Aid type: " + aid_type
 
         implementers = []
         for p in act.findall('participating-org'):
@@ -219,6 +220,14 @@ if __name__ == "__main__":
                 name = name[:-len(cruft)]
             region_codelist[code] = name
 
+    # Prepare aid type codelist
+    aidtype_codelist = {}
+    with open("AidType.csv", newline='') as f:
+        reader = csv.reader(f, delimiter=',', quotechar='"')
+        for row in reader:
+            code, name, _, _, _, _, _ = row
+            aidtype_codelist[code] = name
+
     paths = [
         "bmgf-activity-a-f.xml",
         "bmgf-activity-g-m.xml",
@@ -227,4 +236,5 @@ if __name__ == "__main__":
     ]
     for p in paths:
         e = xml.etree.ElementTree.parse(p).getroot()
-        print_sql(elem2list(e, country_codelist, region_codelist))
+        print_sql(elem2list(e, country_codelist, region_codelist,
+            aidtype_codelist))
