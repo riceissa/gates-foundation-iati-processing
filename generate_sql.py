@@ -3,6 +3,7 @@
 import xml.etree.ElementTree
 import sys
 import re
+import json
 
 def elem2list(xml_element):
     '''
@@ -31,7 +32,7 @@ def elem2list(xml_element):
         assert len(act.findall('reporting-org')) == 1
         # Make sure we're talking about the Gates Foundation
         assert donor == "Bill and Melinda Gates Foundation"
-        countries = [t.attrib['code'] for t in act.findall("recipient-country")]
+        countries = [code2country(t.attrib['code']) for t in act.findall("recipient-country")]
         affected_countries = ", ".join(countries)
 
         implementers = []
@@ -125,6 +126,17 @@ def donee_normalized(x):
     x = x.replace("ב", "á")
     x = x.replace("ה", "ä")
     x = x.replace("כ", "ë")
+    return x
+
+def code2country(x):
+    '''
+    Convert the country code to the country name, e.g. "AF" becomes
+    "AFGHANISTAN". Return x itself if nothing matched.
+    '''
+    j = json.load(open("Country.json"))["Country"]
+    for c in j:
+        if x == c["code"]:
+            return c["name"]
     return x
 
 def mysql_quote(x):
