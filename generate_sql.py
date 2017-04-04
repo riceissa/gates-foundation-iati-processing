@@ -34,6 +34,7 @@ def elem2list(xml_element):
         assert donor == "Bill and Melinda Gates Foundation"
         countries = [code2country(t.attrib['code']) for t in act.findall("recipient-country")]
         affected_countries = ", ".join(countries)
+        notes = act.find('description').text
 
         implementers = []
         for p in act.findall('participating-org'):
@@ -82,6 +83,7 @@ def elem2list(xml_element):
                     # Fields common on the basis of activity
                     d['donor'] = donor
                     d['affected_countries'] = affected_countries
+                    d['notes'] = notes
 
                     # Fields common on the basis of transaction
                     d['donee'] = donee_normalized(donee)
@@ -95,7 +97,6 @@ def elem2list(xml_element):
                     # Adjust the amount
                     percent = float(sector.attrib.get("percentage", 100))
                     d['amount'] = total_amount * percent / 100
-                    d['notes'] = "NULL" # TODO
                     result.append(d)
     return result
 
