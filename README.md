@@ -15,7 +15,7 @@ wget 'http://codelists103.archive.iatistandard.org/data/codelist/Country/version
 wget 'http://codelists103.archive.iatistandard.org/data/codelist/Region/version/1.0/lang/en.csv' \
     -O Region.csv
 # The aid type CSV from the standard is malformed (fails to escape double
-# quotes) so edit it a little
+# quotes) so use the XML instead
 wget 'http://codelists103.archive.iatistandard.org/data/codelist/AidType/version/1.0/lang/en.xml' \
     -O AidType.xml
 # Gates Foundation uses some sector codes that aren't in version 1.03 of
