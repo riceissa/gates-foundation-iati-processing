@@ -29,15 +29,14 @@ def elem2list(xml_element, country_codelist, region_codelist):
         assert len(sectors) > 0, "must have at least one sector"
 
         # These fields are common among all rows in the activity
-        donor = act.find('reporting-org').text
-        assert len(act.findall('reporting-org')) == 1
+        donor = findone(act, 'reporting-org').text
         # Make sure we're talking about the Gates Foundation
         assert donor == "Bill and Melinda Gates Foundation"
         countries = [country_codelist[t.attrib['code']] for t in act.findall("recipient-country")]
         affected_countries = ", ".join(countries)
         regions = [code2region(t.attrib['code'], region_codelist) for t in act.findall("recipient-region")]
         affected_regions = ", ".join(regions)
-        notes = act.find('description').text
+        notes = findone(act, 'description').text
 
         implementers = []
         for p in act.findall('participating-org'):
@@ -55,12 +54,11 @@ def elem2list(xml_element, country_codelist, region_codelist):
         transactions = act.findall("transaction")
         assert len(transactions) > 0
         for trans in transactions:
-            if trans.find("transaction-type").attrib["code"] == "C":
+            if findone(trans, "transaction-type").attrib["code"] == "C":
                 # These fields are common among all rows in the transaction
-                donee = trans.find("receiver-org").text.strip()
-                assert len(trans.findall("receiver-org")) == 1
+                donee = findone(trans, "receiver-org").text.strip()
                 assert donee == implementer
-                donation_date = trans.find('transaction-date') \
+                donation_date = findone(trans, 'transaction-date') \
                         .attrib['iso-date']
                 assert re.match(r"\A[0-9]{4}-[0-9]{2}-[0-9]{2}\Z",
                         donation_date)
@@ -68,12 +66,11 @@ def elem2list(xml_element, country_codelist, region_codelist):
 
                 # Save this value for later; we will multiply the total amount
                 # by the percentage of the total the sector gets
-                total_amount = float(trans.find('value').text)
-                assert len(trans.findall('value')) == 1
+                total_amount = float(findone(trans, 'value').text)
 
                 # As a sanity check, ensure that the "provider-org" tag under
                 # transaction is the Gates Foundation
-                provider = trans.find("provider-org").text
+                provider = findone(trans, "provider-org").text
                 assert provider == "Bill & Melinda Gates Foundation"
 
                 for sector in sectors:
@@ -103,6 +100,14 @@ def elem2list(xml_element, country_codelist, region_codelist):
                     d['amount'] = total_amount * percent / 100
                     result.append(d)
     return result
+
+def findone(element, match):
+    '''
+    Find exactly one element matching match, and ensure that there is exactly
+    one element. Here element is of type xml.etree.ElementTree.Element.
+    '''
+    assert len(element.findall(match)) == 1
+    return element.find(match)
 
 def sector_code2cause_area(code):
     '''
