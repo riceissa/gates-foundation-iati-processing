@@ -7,3 +7,4 @@ Registry](https://iatiregistry.org/publisher/bmgf).
     wget 'https://docs.gatesfoundation.org/documents/bmgf-activity-g-m.xml'
     wget 'https://docs.gatesfoundation.org/documents/bmgf-activity-n-s.xml'
     wget 'https://docs.gatesfoundation.org/documents/bmgf-activity-t-z.xml'
+    wget 'http://iatistandard.org/202/codelists/downloads/clv1/codelist/Country.json'
