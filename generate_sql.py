@@ -6,7 +6,7 @@ import csv
 
 
 def elem2list(xml_element, country_codelist, region_codelist,
-              aidtype_codelist):
+              aidtype_codelist, sector_codelist):
     '''
     Convert the IATI activity tree into a flat list of transactions.
 
@@ -240,13 +240,20 @@ if __name__ == "__main__":
                 name = name[:-len(cruft)]
             region_codelist[code] = name
 
-    # Prepare aid type codelist
+    # Prepare aid type codelist; the CSV version of the codelist is malformed
+    # (doesn't escape quotes correctly) so we use the XML instead
     aidtype_codelist = {}
-    with open("AidType.csv", newline='') as f:
+    e = xml.etree.ElementTree.parse("AidType.xml").getroot()
+    for aidtype in e:
+        aidtype_codelist[aidtype.find("code").text] = aidtype.find("name").text
+
+    # Prepare sector codelist
+    sector_codelist = {}
+    with open("Sector.csv", newline='') as f:
         reader = csv.reader(f, delimiter=',', quotechar='"')
         for row in reader:
             code, name, _, _, _, _, _ = row
-            aidtype_codelist[code] = name
+            sector_codelist[code] = name
 
     paths = [
         "bmgf-activity-a-f.xml",
@@ -257,4 +264,4 @@ if __name__ == "__main__":
     for p in paths:
         e = xml.etree.ElementTree.parse(p).getroot()
         print_sql(elem2list(e, country_codelist, region_codelist,
-                  aidtype_codelist))
+                  aidtype_codelist, sector_codelist))
