@@ -134,10 +134,11 @@ def code2country(x):
     Convert the country code to the country name, e.g. "AF" becomes
     "AFGHANISTAN". Return x itself if nothing matched.
     '''
-    j = json.load(open("Country.json"))["Country"]
-    for c in j:
-        if x == c["code"]:
-            return c["name"]
+    with open("Country.csv", "r") as f:
+        for line in f:
+            code, name, _ = line.split(",")
+            if x == code:
+                return name[0] + name[1:].lower()
     return x
 
 def mysql_quote(x):
