@@ -143,7 +143,8 @@ def code2country(x):
 def mysql_quote(x):
     '''
     Quote the string x using MySQL quoting rules. If x is the empty string,
-    return "NULL". Probably not safe against maliciously formed strings.
+    return "NULL". Probably not safe against maliciously formed strings, but
+    whatever; our XML input is fixed and from a basically trustable source..
     '''
     if not x:
         return "NULL"
