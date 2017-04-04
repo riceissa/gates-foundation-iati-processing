@@ -19,3 +19,5 @@ The Gates Foundation IATI data uses version 1.03 of the standard.
         -O - \
         | sed 's/^B03.*/B03,"Contributions to specific-purpose programmes and funds managed by international organisations (multilateral, INGO)",_,_,_,_,_/' \
         > AidType.csv
+    wget 'http://iatistandard.org/105/codelists/downloads/clv1/codelist/Sector.csv' \
+        -O Sector.csv
