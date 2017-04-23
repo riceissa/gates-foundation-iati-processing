@@ -68,6 +68,8 @@ def elem2list(xml_element, country_codelist, region_codelist,
                 # These fields are common among all rows in the transaction
                 donee = findone(trans, "receiver-org").text.strip()
                 assert donee == implementer
+                if (donee in DONEE_RENAME):
+                    donee = DONEE_RENAME[donee]
                 donation_date = findone(trans, 'transaction-date') \
                     .attrib['iso-date']
                 assert re.match(r"\A[0-9]{4}-[0-9]{2}-[0-9]{2}\Z",

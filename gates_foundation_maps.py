@@ -184,5 +184,7 @@ SECTOR_TO_DONOR_CAUSE_AREA_URL = {
     "Women’s equality organisations and institutions": NULL,
 }
 
-
+DONEE_RENAME = {
+    "Research Triangle Institute" : "RTI International",
+}
 
