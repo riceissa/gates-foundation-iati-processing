@@ -1,8 +1,10 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import xml.etree.ElementTree
 import re
 import csv
+
+from gates_foundation_maps import *
 
 
 def elem2list(xml_element, country_codelist, region_codelist,
@@ -110,8 +112,8 @@ def elem2list(xml_element, country_codelist, region_codelist,
 
                     # Fields that require sector information
                     d['cause_area'] = sector_code2cause_area(
-                            sector.attrib["code"])
-                    d['donor_cause_area_url'] = "NULL"  # TODO
+                            sector.attrib["code"], sector_codelist)
+                    d['donor_cause_area_url'] = SECTOR_TO_DONOR_CAUSE_AREA_URL[sector_codelist[sector.attrib["code"]]]
                     # Adjust the amount
                     percent = float(sector.attrib.get("percentage", 100))
                     d['amount'] = total_amount * percent / 100
@@ -128,12 +130,12 @@ def findone(element, match):
     return element.find(match)
 
 
-def sector_code2cause_area(code):
+def sector_code2cause_area(code, sector_codelist):
     '''
     Convert the DAC five-digit sector code to a string that represents the
     cause area.
     '''
-    return "FIXME"
+    return SECTOR_TO_CAUSE_AREA[sector_codelist[code]]
 
 
 def code2region(code, region_codelist):
