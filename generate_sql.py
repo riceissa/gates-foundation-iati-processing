@@ -120,6 +120,8 @@ def elem2list(xml_element, country_codelist, region_codelist,
                             sector_name]
                     # Adjust the amount
                     percent = float(sector.attrib.get("percentage", 100))
+                    assert percent > 0, "percent is {}, which is too small".format(percent)
+                    assert percent <= 100, "percent is {}, which is too big".format(percent)
                     d['amount'] = total_amount * percent / 100
                     result.append(d)
     return result
