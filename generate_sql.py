@@ -5,7 +5,7 @@ import re
 import csv
 
 from gates_foundation_maps import SECTOR_TO_CAUSE_AREA, \
-        SECTOR_TO_DONOR_CAUSE_AREA_URL
+        SECTOR_TO_DONOR_CAUSE_AREA_URL, DONEE_RENAME
 
 
 def elem2list(xml_element, country_codelist, region_codelist,
