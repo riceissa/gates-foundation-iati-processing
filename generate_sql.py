@@ -167,6 +167,7 @@ def donee_normalized(x):
     x = x.replace("ב", "á")
     x = x.replace("ה", "ä")
     x = x.replace("כ", "ë")
+    x = x.replace("\u05b9", "É")
     x = re.sub(r",? inc\.?$", "", x, flags=re.IGNORECASE)
     return x
 
