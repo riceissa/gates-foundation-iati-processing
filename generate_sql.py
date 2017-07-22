@@ -169,6 +169,8 @@ def donee_normalized(x):
     x = x.replace("כ", "ë")
     x = x.replace("\u05b9", "É")
     x = re.sub(r",? inc\.?$", "", x, flags=re.IGNORECASE)
+    if x in DONEE_RENAME:
+        x = DONEE_RENAME[x]
     return x
 
 
