@@ -104,7 +104,7 @@ def elem2list(xml_element, country_codelist, region_codelist,
                     }
                     # Fields common on the basis of activity
                     d['donor'] = donor
-                    d['affected_countries'] = affected_countries
+                    d['affected_countries'] = country_normalized(affected_countries)
                     d['affected_regions'] = affected_regions
                     d['notes'] = notes
 
@@ -167,6 +167,20 @@ def donee_normalized(x):
     x = x.replace("ב", "á")
     x = x.replace("ה", "ä")
     x = x.replace("כ", "ë")
+    x = x.replace("\u05b9", "É")
+    x = re.sub(r",? inc\.?$", "", x, flags=re.IGNORECASE)
+    if x in DONEE_RENAME:
+        x = DONEE_RENAME[x]
+    return x
+
+
+def country_normalized(x):
+    if x.lower() == "united states":
+        return "United States"
+    if x.lower() == "south africa":
+        return "South Africa"
+    if x.lower() == "united kingdom":
+        return "United Kingdom"
     return x
 
 
