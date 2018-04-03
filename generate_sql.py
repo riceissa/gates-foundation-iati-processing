@@ -37,10 +37,10 @@ def elem2list(xml_element, country_codelist, region_codelist,
         assert donor == "Bill and Melinda Gates Foundation"
         countries = [country_codelist[t.attrib['code']]
                      for t in act.findall("recipient-country")]
-        affected_countries = ", ".join(countries)
+        affected_countries = "|".join(countries)
         regions = [code2region(t.attrib['code'], region_codelist)
                    for t in act.findall("recipient-region")]
-        affected_regions = ", ".join(regions)
+        affected_regions = "|".join(regions)
         aid_type = aidtype_codelist[
                 findone(act, "default-aid-type") .attrib['code']]
         notes = (findone(act, 'description').text + "; " + "Aid type: " +
