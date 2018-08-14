@@ -5,6 +5,13 @@ Registry](https://iatiregistry.org/publisher/bmgf).
 
 The Gates Foundation IATI data uses version 1.03 of the standard.
 
+## Instructions for getting the data and generating the SQL file
+
+Go to https://iatiregistry.org/publisher/bmgf and make sure the activity files
+are the same as in `fetch.sh` (in the past, Gates has made the activity files
+more granular over time, so that the file names changed). If the file names are
+different, first edit `fetch.sh` to use the new file names.
+
 To run:
 
 ```bash

@@ -1,8 +1,15 @@
 #!/bin/bash
-wget 'https://docs.gatesfoundation.org/documents/bmgf-activity-a-f.xml'
-wget 'https://docs.gatesfoundation.org/documents/bmgf-activity-g-m.xml'
-wget 'https://docs.gatesfoundation.org/documents/bmgf-activity-n-s.xml'
-wget 'https://docs.gatesfoundation.org/documents/bmgf-activity-t-z.xml'
+wget 'https://docs.gatesfoundation.org/Documents/bmgf-activity-a-c.xml'
+wget 'https://docs.gatesfoundation.org/Documents/bmgf-activity-d-f.xml'
+wget 'https://docs.gatesfoundation.org/Documents/bmgf-activity-g-h.xml'
+wget 'https://docs.gatesfoundation.org/Documents/bmgf-activity-i.xml'
+wget 'https://docs.gatesfoundation.org/Documents/bmgf-activity-j-l.xml'
+wget 'https://docs.gatesfoundation.org/Documents/bmgf-activity-m-o.xml'
+wget 'https://docs.gatesfoundation.org/Documents/bmgf-activity-p-r.xml'
+wget 'https://docs.gatesfoundation.org/Documents/bmgf-activity-s-t.xml'
+wget 'https://docs.gatesfoundation.org/Documents/bmgf-activity-u.xml'
+wget 'https://docs.gatesfoundation.org/Documents/bmgf-activity-v-z.xml'
+
 wget 'http://codelists103.archive.iatistandard.org/data/codelist/Country/version/1.01/lang/en.csv' \
     -O Country.csv
 wget 'http://codelists103.archive.iatistandard.org/data/codelist/Region/version/1.0/lang/en.csv' \
