@@ -20,6 +20,8 @@ wget -P $datadir 'http://reference.iatistandard.org/203/codelists/downloads/clv1
 wget -P $datadir 'http://reference.iatistandard.org/203/codelists/downloads/clv1/codelist/Region.json'
 wget -P $datadir 'http://reference.iatistandard.org/203/codelists/downloads/clv1/codelist/AidType.json'
 wget -P $datadir 'http://reference.iatistandard.org/203/codelists/downloads/clv1/codelist/Sector.json'
+wget -P $datadir 'http://reference.iatistandard.org/203/codelists/downloads/clv1/codelist/OrganisationRole.json'
+wget -P $datadir 'http://reference.iatistandard.org/203/codelists/downloads/clv1/codelist/TransactionType.json'
 
 # wget 'http://codelists103.archive.iatistandard.org/data/codelist/Country/version/1.01/lang/en.csv' \
 #     -O Country.csv
