@@ -49,7 +49,7 @@ def main():
 
     # Prepare sector codelist
     sector_codelist = {}
-    with open("Sector.json", "r") as f:
+    with open(data_dir + "/Sector.json", "r") as f:
         reader = csv.reader(f, delimiter=',', quotechar='"')
         for row in reader:
             code, name, _, _, _, _, _ = row
