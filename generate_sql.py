@@ -55,7 +55,7 @@ def main():
             code, name, _, _, _, _, _ = row
             sector_codelist[code] = name
 
-    paths = glob.glob(data_dir + "/bmgf-*.xml"
+    paths = glob.glob(data_dir + "/bmgf-*.xml")
     for p in paths:
         e = xml.etree.ElementTree.parse(p).getroot()
         print_sql(elem2list(e, country_codelist, region_codelist,
