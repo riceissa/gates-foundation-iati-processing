@@ -7,6 +7,54 @@ import csv
 from gates_foundation_maps import SECTOR_TO_CAUSE_AREA, \
         SECTOR_TO_DONOR_CAUSE_AREA_URL, DONEE_RENAME
 
+def main():
+    # Prepare country codelist
+    country_codelist = {}
+    with open("Country.csv", newline='') as f:
+        reader = csv.reader(f, delimiter=',', quotechar='"')
+        for row in reader:
+            code, name, _ = row
+            # The standard capitalizes country names (which we don't want) so
+            # just keep the initial capital letter
+            country_codelist[code] = name[0] + name[1:].lower()
+
+    # Prepare region codelist
+    region_codelist = {}
+    with open("Region.csv", newline='') as f:
+        reader = csv.reader(f, delimiter=',', quotechar='"')
+        for row in reader:
+            code, name = row
+            cruft = ", regional"
+            if name.endswith(cruft):
+                name = name[:-len(cruft)]
+            region_codelist[code] = name
+
+    # Prepare aid type codelist; the CSV version of the codelist is malformed
+    # (doesn't escape quotes correctly) so we use the XML instead
+    aidtype_codelist = {}
+    e = xml.etree.ElementTree.parse("AidType.xml").getroot()
+    for aidtype in e:
+        aidtype_codelist[aidtype.find("code").text] = aidtype.find("name").text
+
+    # Prepare sector codelist
+    sector_codelist = {}
+    with open("Sector.csv", newline='') as f:
+        reader = csv.reader(f, delimiter=',', quotechar='"')
+        for row in reader:
+            code, name, _, _, _, _, _ = row
+            sector_codelist[code] = name
+
+    paths = [
+        "bmgf-activity-a-f.xml",
+        "bmgf-activity-g-m.xml",
+        "bmgf-activity-n-s.xml",
+        "bmgf-activity-t-z.xml",
+    ]
+    for p in paths:
+        e = xml.etree.ElementTree.parse(p).getroot()
+        print_sql(elem2list(e, country_codelist, region_codelist,
+                  aidtype_codelist, sector_codelist))
+
 
 def elem2list(xml_element, country_codelist, region_codelist,
               aidtype_codelist, sector_codelist):
@@ -233,49 +281,4 @@ def print_sql(iati_list):
 
 
 if __name__ == "__main__":
-    # Prepare country codelist
-    country_codelist = {}
-    with open("Country.csv", newline='') as f:
-        reader = csv.reader(f, delimiter=',', quotechar='"')
-        for row in reader:
-            code, name, _ = row
-            # The standard capitalizes country names (which we don't want) so
-            # just keep the initial capital letter
-            country_codelist[code] = name[0] + name[1:].lower()
-
-    # Prepare region codelist
-    region_codelist = {}
-    with open("Region.csv", newline='') as f:
-        reader = csv.reader(f, delimiter=',', quotechar='"')
-        for row in reader:
-            code, name = row
-            cruft = ", regional"
-            if name.endswith(cruft):
-                name = name[:-len(cruft)]
-            region_codelist[code] = name
-
-    # Prepare aid type codelist; the CSV version of the codelist is malformed
-    # (doesn't escape quotes correctly) so we use the XML instead
-    aidtype_codelist = {}
-    e = xml.etree.ElementTree.parse("AidType.xml").getroot()
-    for aidtype in e:
-        aidtype_codelist[aidtype.find("code").text] = aidtype.find("name").text
-
-    # Prepare sector codelist
-    sector_codelist = {}
-    with open("Sector.csv", newline='') as f:
-        reader = csv.reader(f, delimiter=',', quotechar='"')
-        for row in reader:
-            code, name, _, _, _, _, _ = row
-            sector_codelist[code] = name
-
-    paths = [
-        "bmgf-activity-a-f.xml",
-        "bmgf-activity-g-m.xml",
-        "bmgf-activity-n-s.xml",
-        "bmgf-activity-t-z.xml",
-    ]
-    for p in paths:
-        e = xml.etree.ElementTree.parse(p).getroot()
-        print_sql(elem2list(e, country_codelist, region_codelist,
-                  aidtype_codelist, sector_codelist))
+    main()
