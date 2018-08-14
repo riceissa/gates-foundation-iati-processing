@@ -19,7 +19,7 @@ def main():
 
     # Prepare country codelist
     country_codelist = {}
-    with open(data_dir + "/Country.csv", "r") as f:
+    with open(data_dir + "/Country.json", "r") as f:
         j = json.load(f)
         for country in j["Country"]:
             # The standard capitalizes country names (which we don't want) so
@@ -29,7 +29,7 @@ def main():
 
     # Prepare region codelist
     region_codelist = {}
-    with open(data_dir + "/Region.csv", "r") as f:
+    with open(data_dir + "/Region.json", "r") as f:
         j = json.load(f)
         for region in j["Region"]:
             code = region["code"]
@@ -49,7 +49,7 @@ def main():
 
     # Prepare sector codelist
     sector_codelist = {}
-    with open("Sector.csv", newline='') as f:
+    with open("Sector.json", "r") as f:
         reader = csv.reader(f, delimiter=',', quotechar='"')
         for row in reader:
             code, name, _, _, _, _, _ = row
