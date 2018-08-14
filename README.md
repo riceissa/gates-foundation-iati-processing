@@ -3,7 +3,8 @@
 Gates Foundation IATI data is available from the [IATI
 Registry](https://iatiregistry.org/publisher/bmgf).
 
-The Gates Foundation IATI data uses version 1.03 of the standard.
+As of 2018-08-14, the Gates Foundation IATI data claims to use version 2.03 of
+the standard.
 
 ## Instructions for getting the data and generating the SQL file
 
