@@ -7,6 +7,8 @@ import glob
 import json
 import sys
 
+import pdb
+
 from gates_foundation_maps import SECTOR_TO_CAUSE_AREA, \
         SECTOR_TO_DONOR_CAUSE_AREA_URL, DONEE_RENAME
 
@@ -39,6 +41,12 @@ def main():
                 name = name[:-len(cruft)]
             region_codelist[code] = name
 
+    organization_role_codelist = {}
+    with open(data_dir + "/OrganisationRole.json", "r") as f:
+        j = json.load(f)
+        for role in j["OrganisationRole"]:
+            organization_role_codelist[role["code"]] = role["name"]
+
     # Prepare aid type codelist; the CSV version of the codelist is malformed
     # (doesn't escape quotes correctly) so we use the XML instead
     aidtype_codelist = {}
@@ -56,15 +64,24 @@ def main():
             name = sector["name"]
             sector_codelist[code] = name
 
-    paths = glob.glob(data_dir + "/bmgf-*.xml")
+    transaction_codelist = {}
+    with open(data_dir + "/TransactionType.json", "r") as f:
+        j = json.load(f)
+        for transaction_type in j["TransactionType"]:
+            transaction_codelist[transaction_type["code"]] = transaction_type["name"]
+
+    paths = sorted(glob.glob(data_dir + "/bmgf-*.xml"))
     for p in paths:
+        print("Doing", p, file=sys.stderr)
         e = xml.etree.ElementTree.parse(p).getroot()
         print_sql(elem2list(e, country_codelist, region_codelist,
-                  aidtype_codelist, sector_codelist))
+                  aidtype_codelist, sector_codelist, organization_role_codelist,
+                  transaction_codelist))
 
 
 def elem2list(xml_element, country_codelist, region_codelist,
-              aidtype_codelist, sector_codelist):
+              aidtype_codelist, sector_codelist, organization_role_codelist,
+              transaction_codelist):
     '''
     Convert the IATI activity tree into a flat list of transactions.
 
@@ -84,12 +101,14 @@ def elem2list(xml_element, country_codelist, region_codelist,
     result = []
     for act in xml_element:
         sectors = act.findall("sector")
-        assert len(sectors) > 0, "must have at least one sector"
+        if len(sectors) <= 0:
+            # Use "Sectors not specified"
+            sectors = xml.etree.ElementTree.fromstring("""<sector percentage="100" code="99810" vocabulary="1"></sector>""")
 
         # These fields are common among all rows in the activity
-        donor = findone(act, 'reporting-org').text
+        donor = findone(findone(act, 'reporting-org'), 'narrative').text
         # Make sure we're talking about the Gates Foundation
-        assert donor == "Bill and Melinda Gates Foundation"
+        assert donor == "Bill and Melinda Gates Foundation", donor
         countries = [country_codelist[t.attrib['code']]
                      for t in act.findall("recipient-country")]
         affected_countries = "|".join(countries)
@@ -98,15 +117,15 @@ def elem2list(xml_element, country_codelist, region_codelist,
         affected_regions = "|".join(regions)
         aid_type = aidtype_codelist[
                 findone(act, "default-aid-type") .attrib['code']]
-        notes = (findone(act, 'description').text + "; " + "Aid type: " +
+        notes = (findone(findone(act, 'description'), 'narrative').text + "; " + "Aid type: " +
                  aid_type)
 
         implementers = []
         for p in act.findall('participating-org'):
-            if p.attrib['role'] == "Funding":
-                assert p.text == "Bill & Melinda Gates Foundation"
-            if p.attrib['role'] == "Implementing":
-                implementers.append(p.text)
+            if organization_role_codelist[p.attrib['role']] == "Funding":
+                assert findone(p, "narrative").text == "Bill and Melinda Gates Foundation"
+            if organization_role_codelist[p.attrib['role']] == "Implementing":
+                implementers.append(findone(p, "narrative").text)
         # This doesn't have to be the case, but as of this writing, for Gates
         # Foundation IATI data, each activity only has one implementing org. If
         # the situation changes we will want to know about it, so place an
@@ -117,11 +136,10 @@ def elem2list(xml_element, country_codelist, region_codelist,
         # Within each activity, we want a separate SQL row for each combination
         # of transaction and sector
         transactions = act.findall("transaction")
-        assert len(transactions) > 0
         for trans in transactions:
-            if findone(trans, "transaction-type").attrib["code"] == "C":
+            if transaction_codelist[findone(trans, "transaction-type").attrib["code"]] == "Outgoing Commitment":
                 # These fields are common among all rows in the transaction
-                donee = findone(trans, "receiver-org").text.strip()
+                donee = findone(findone(trans, "receiver-org"), "narrative").text.strip()
                 assert donee == implementer
                 if donee in DONEE_RENAME:
                     donee = DONEE_RENAME[donee]
@@ -147,8 +165,8 @@ def elem2list(xml_element, country_codelist, region_codelist,
 
                 # As a sanity check, ensure that the "provider-org" tag under
                 # transaction is the Gates Foundation
-                provider = findone(trans, "provider-org").text
-                assert provider == "Bill & Melinda Gates Foundation"
+                provider = findone(findone(trans, "provider-org"), "narrative").text
+                assert provider == "Bill and Melinda Gates Foundation"
 
                 for sector in sectors:
                     # Make a new dict and fill in all the fields that are in
@@ -170,13 +188,19 @@ def elem2list(xml_element, country_codelist, region_codelist,
 
                     # Fields that require sector information
                     sector_name = sector_codelist[sector.attrib["code"]]
-                    d['cause_area'] = SECTOR_TO_CAUSE_AREA[sector_name]
-                    d['donor_cause_area_url'] = SECTOR_TO_DONOR_CAUSE_AREA_URL[
-                            sector_name]
+
+                    # TODO change this back to make sure we know all the sector names
+                    # d['cause_area'] = SECTOR_TO_CAUSE_AREA[sector_name]
+                    d['cause_area'] = SECTOR_TO_CAUSE_AREA.get(sector_name, sector_name)
+
+                    # TODO change this back to make sure we know all the sector names
+                    # d['donor_cause_area_url'] = SECTOR_TO_DONOR_CAUSE_AREA_URL[sector_name]
+                    d['donor_cause_area_url'] = SECTOR_TO_DONOR_CAUSE_AREA_URL.get(sector_name, sector_name)
+
                     # Adjust the amount
                     percent = float(sector.attrib.get("percentage", 100))
                     assert percent > 0, "percent is {}, which is too small".format(percent)
-                    assert percent <= 100, "percent is {}, which is too big".format(percent)
+                    # assert percent <= 100, "percent is {}, which is too big".format(percent)
                     d['amount'] = total_amount * percent / 100
                     result.append(d)
     return result
