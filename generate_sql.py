@@ -3,27 +3,37 @@
 import xml.etree.ElementTree
 import re
 import csv
+import glob
+import json
+import sys
 
 from gates_foundation_maps import SECTOR_TO_CAUSE_AREA, \
         SECTOR_TO_DONOR_CAUSE_AREA_URL, DONEE_RENAME
 
 def main():
+    try:
+        data_dir = sys.argv[1]
+    except IndexError:
+        print("Please specify a data directory", file=sys.stderr)
+        quit()
+
     # Prepare country codelist
     country_codelist = {}
-    with open("Country.csv", newline='') as f:
-        reader = csv.reader(f, delimiter=',', quotechar='"')
-        for row in reader:
-            code, name, _ = row
+    with open(data_dir + "/Country.csv", "r") as f:
+        j = json.load(f)
+        for country in j["Country"]:
             # The standard capitalizes country names (which we don't want) so
             # just keep the initial capital letter
-            country_codelist[code] = name[0] + name[1:].lower()
+            name = country["name"]
+            country_codelist[country["code"]] = name[0] + name[1:].lower()
 
     # Prepare region codelist
     region_codelist = {}
-    with open("Region.csv", newline='') as f:
-        reader = csv.reader(f, delimiter=',', quotechar='"')
-        for row in reader:
-            code, name = row
+    with open(data_dir + "/Region.csv", "r") as f:
+        j = json.load(f)
+        for region in j["Region"]:
+            code = region["code"]
+            name = region["name"]
             cruft = ", regional"
             if name.endswith(cruft):
                 name = name[:-len(cruft)]
@@ -32,9 +42,10 @@ def main():
     # Prepare aid type codelist; the CSV version of the codelist is malformed
     # (doesn't escape quotes correctly) so we use the XML instead
     aidtype_codelist = {}
-    e = xml.etree.ElementTree.parse("AidType.xml").getroot()
-    for aidtype in e:
-        aidtype_codelist[aidtype.find("code").text] = aidtype.find("name").text
+    with open(data_dir + "/AidType.json", "r") as f:
+        j = json.load(f)
+        for aidtype in j["AidType"]:
+            aidtype_codelist[aidtype["code"]] = aidtype["name"]
 
     # Prepare sector codelist
     sector_codelist = {}
