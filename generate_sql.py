@@ -50,9 +50,10 @@ def main():
     # Prepare sector codelist
     sector_codelist = {}
     with open(data_dir + "/Sector.json", "r") as f:
-        reader = csv.reader(f, delimiter=',', quotechar='"')
-        for row in reader:
-            code, name, _, _, _, _, _ = row
+        j = json.load(f)
+        for sector in j["Sector"]:
+            code = sector["code"]
+            name = sector["name"]
             sector_codelist[code] = name
 
     paths = glob.glob(data_dir + "/bmgf-*.xml")
