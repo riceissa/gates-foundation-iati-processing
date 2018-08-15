@@ -7,8 +7,6 @@ import glob
 import json
 import sys
 
-import pdb
-
 from gates_foundation_maps import SECTOR_TO_CAUSE_AREA, \
         SECTOR_TO_DONOR_CAUSE_AREA_URL, DONEE_RENAME
 
@@ -115,8 +113,7 @@ def elem2list(xml_element, country_codelist, region_codelist,
         regions = [code2region(t.attrib['code'], region_codelist)
                    for t in act.findall("recipient-region")]
         affected_regions = "|".join(regions)
-        aid_type = aidtype_codelist[
-                findone(act, "default-aid-type") .attrib['code']]
+        aid_type = aidtype_codelist[findone(act, "default-aid-type").attrib['code']]
         notes = (findone(findone(act, 'description'), 'narrative').text + "; " + "Aid type: " +
                  aid_type)
 
@@ -133,8 +130,8 @@ def elem2list(xml_element, country_codelist, region_codelist,
         assert len(implementers) == 1
         implementer = implementers[0]
 
-        # Within each activity, we want a separate SQL row for each combination
-        # of transaction and sector
+        # Within each activity, we want a separate SQL row for each
+        # (transaction, sector) combination
         transactions = act.findall("transaction")
         for trans in transactions:
             if transaction_codelist[findone(trans, "transaction-type").attrib["code"]] == "Outgoing Commitment":
@@ -192,15 +189,19 @@ def elem2list(xml_element, country_codelist, region_codelist,
                     # TODO change this back to make sure we know all the sector names
                     # d['cause_area'] = SECTOR_TO_CAUSE_AREA[sector_name]
                     d['cause_area'] = SECTOR_TO_CAUSE_AREA.get(sector_name, sector_name)
+                    if sector_name not in SECTOR_TO_CAUSE_AREA:
+                        print("unknown sector:", sector_name, file=sys.stderr)
 
                     # TODO change this back to make sure we know all the sector names
                     # d['donor_cause_area_url'] = SECTOR_TO_DONOR_CAUSE_AREA_URL[sector_name]
                     d['donor_cause_area_url'] = SECTOR_TO_DONOR_CAUSE_AREA_URL.get(sector_name, sector_name)
+                    if sector_name not in SECTOR_TO_DONOR_CAUSE_AREA_URL:
+                        print("unknown sector:", sector_name, file=sys.stderr)
 
                     # Adjust the amount
                     percent = float(sector.attrib.get("percentage", 100))
                     assert percent > 0, "percent is {}, which is too small".format(percent)
-                    # assert percent <= 100, "percent is {}, which is too big".format(percent)
+                    assert percent <= 100, "percent is {}, which is too big".format(percent)
                     d['amount'] = total_amount * percent / 100
                     result.append(d)
     return result
