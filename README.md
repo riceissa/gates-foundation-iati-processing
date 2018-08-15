@@ -16,8 +16,12 @@ different, first edit `fetch.sh` to use the new file names.
 To run:
 
 ```bash
-./fetch.sh # fetch external dependencies
-./generate_sql.py > out.sql # generate the SQL inserts
+# Fetch external dependencies into data-retrieved-YYYY-MM-DD
+./fetch.sh
+
+# Generate the SQL inserts.  Make sure to change YYYY-MM-DD to the
+# current date.
+./generate_sql.py data-retrieved-YYYY-MM-DD > out.sql
 ```
 
 **2017-07-15 update**: For `Sector.csv`, the sector names have been slightly
