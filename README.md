@@ -24,10 +24,6 @@ To run:
 ./generate_sql.py data-retrieved-YYYY-MM-DD > out.sql
 ```
 
-**2017-07-15 update**: For `Sector.csv`, the sector names have been slightly
-modified since the script was written, so if you download straight from the
-IATI site, you will get key errors.
-
-Also there is a bug in the XML from Gates, where there is a percentage that
+There is a bug in the XML from Gates, where there is a percentage that
 equals 500 (i.e. 500% a.k.a. utter nonsense). An assertion in the script
 catches this. If you would like to generate the SQL, edit the XML.
