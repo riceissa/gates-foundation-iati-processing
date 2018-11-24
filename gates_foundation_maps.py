@@ -236,6 +236,7 @@ DONEE_RENAME = {
     'Rutgers University Foundation': 'Rutgers University',
     "Seattle Children's Hospital Foundation": "Seattle Children's Hospital",
     'The Board of Trustees of the University of Illinois': 'University of Illinois',
+    'The GAVI Campaign': 'GAVI Alliance',
     'The Henry J. Kaiser Family Foundation': 'Kaiser Family Foundation',
     'The Oakland Public Education Fund': 'Oakland Public Education Fund',
     'The Pennsylvania State University': 'Pennsylvania State University',
